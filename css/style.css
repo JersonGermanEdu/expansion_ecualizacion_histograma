@@ -1,0 +1,114 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    color: #222;
+}
+
+h1 {
+    text-align: center;
+    margin: 24px 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px 32px;
+    display: grid;
+}
+
+.section {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+}
+
+.section h2 {
+    margin-top: 0;
+    font-size: 1.2rem;
+}
+
+.card {
+    display: grid;
+    gap: 16px;
+}
+
+.image-preview {
+    min-height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* border: 2px dashed #c4c4c4; */
+    border-radius: 12px;
+    background: #fafafa;
+    /* padding: 12px; */
+}
+
+.image-preview img {
+    max-width: 100%;
+    /* max-height: 400px; */
+    display: block;
+    border-radius: 8px;
+    width: 100%;
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.group-options {
+    display: flex;
+    gap: 16px;
+    padding: 12px 12px;
+}
+
+#lienzo {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 8px;
+    background: #f0f0f0;
+    display: block;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.button,
+button {
+    display: inline-block;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #3b82f6;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    text-align: center;
+}
+
+.button[for="inputFile"] {
+    margin-bottom: 28px;
+}
+
+button:disabled,
+.button.disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+.button:hover,
+button:hover {
+    background: #2563eb;
+}
+
+/* Tengo 4 sections dentro de un container, quiero que se muestren en 2 columnas */
+
+
