@@ -50,10 +50,28 @@
     </div>
 
     <script>
+
+        const intensidades = Array.from({ length: 256 }, (_, i) => i);
+        // Generamos pixeles aleatorios para el histograma (puedes reemplazar esto con tus datos reales)
+        const pixeles = Array.from({ length: 1600 }, () => Math.floor(Math.random() * 256));
+        // agrupamos los pixeles por intensidad
+        const histograma = pixeles.reduce((acc, pixel) => {
+            acc[pixel] = (acc[pixel] || 0) + 1;
+            return acc;
+        }, {});
+        // Convertimos el histograma a un array de frecuencias para cada intensidad
+        const histogramaArray = intensidades.map(intensidad => histograma[intensidad] || 0);
+
+        console.log("Pixeles:", pixeles);
+        console.log("Histograma:", histograma);
+        console.log("HistogramaArray", histogramaArray)
+        // 'MiaJacksonn''HoneyMollyX''lili_jhonson'
+        // const datos = Array.from({ length: 256 }, (_, i) => Math.round(Math.random() * 256));
         var trace1 = {
             type: 'bar',
-            x: Array.from({ length: 256 }, (_, i) => i),
-            y: Array.from({length:256}, ()=>Math.floor(Math.random() * 256) ),
+            x: intensidades,
+            y: histogramaArray,
+            // y: datos,
             marker: {
                 color: '#CCCCCC',
                 line: {

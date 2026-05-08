@@ -10,7 +10,7 @@ function generarHistograma(datos, esOriginal) {
     const trace1 = {
         type: 'bar',
         x: intensidades,
-        y: intensidades.map(i => frecuencias[i] || 0).sort((a, b) => b - a), // Ordenar de menor a mayor
+        y: intensidades.map(i => frecuencias[i] || 0),
         marker: {
             color: '#CCCCCC',
             line: {
