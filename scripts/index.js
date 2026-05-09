@@ -4,7 +4,7 @@ const btnProcesar = document.getElementById('btnProcesar');
 const rdExpansion = document.getElementById('rdExpansion');
 const rdEcualizacion = document.getElementById('rdEcualizacion');
 const lienzo = document.getElementById('lienzo');
-const ctx = lienzo.getContext('2d');
+const ctx = lienzo.getContext('2d', { willReadFrequently: true });
 
 inputFile.addEventListener('change', (event) => {
     const archivo = event.target.files?.[0];
@@ -39,6 +39,9 @@ inputFile.addEventListener('change', (event) => {
             lienzo.width = imgTemporal.naturalWidth;
             lienzo.height = imgTemporal.naturalHeight;
             ctx.clearRect(0, 0, lienzo.width, lienzo.height);
+            // limpiamos los histogramas anteriores
+            document.getElementById('histogramaOriginal').innerHTML = '';
+            document.getElementById('histogramaProcesado').innerHTML = '';            
             generarHistograma(datos, "histogramaOriginal");
         }
         imgTemporal.src = lector.result;

@@ -20,8 +20,13 @@ function expansion(datos) {
     for (let i = 0; i < pixelesMuestreados.length; i++) {
         const valorOriginal = pixelesMuestreados[i];
         const valorTransformado = Math.round(media * valorOriginal + b);
-        // console.log(`Pixel ${i}: valor original=${valorOriginal}, valor transformado=${valorTransformado}`);
         pixelesMuestreados[i] = valorTransformado;
+    }
+    
+    for (let i = 0; i < 10; i++) {
+        const valorOriginal = pixelesMuestreados[i];
+        const valorTransformado = Math.round(media * valorOriginal + b);
+        console.log(`Pixel ${i}: valor original=${valorOriginal}, valor transformado=${valorTransformado}`);
     }
 
     // Actualizar el array original con los valores transformados
