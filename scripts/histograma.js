@@ -17,7 +17,7 @@ function generarHistograma(datos, idContenedor) {
         return acc;
     }, {});
     
-    // Crear el trace para Plotly
+    // Crear el trace para Plotly sin decimales en el eje x
     const trace = {
         type: 'bar',
         x: intensidades,
@@ -25,7 +25,7 @@ function generarHistograma(datos, idContenedor) {
         marker: {
             color: '#b82929',
             line: {
-                width: 2.5,
+                width: 1,
                 color: ( idContenedor === 'histogramaOriginal' ? '#444444' : '#3b82f6' )
             }
         }
@@ -34,7 +34,7 @@ function generarHistograma(datos, idContenedor) {
 
     const layout = {
         title: {
-            text: 'Histograma original',
+            text: 'Histograma ' + (idContenedor === 'histogramaOriginal' ? 'Original' : 'Procesado'),
         },
         font: { size: 18, color: '#7f7f7f' },
         xaxis: {
@@ -44,7 +44,10 @@ function generarHistograma(datos, idContenedor) {
                     size: 18,
                     color: '#7f7f7f'
                 }
-            }
+            },
+            tickmode: 'linear',
+            tick0: 0,
+            dtick: 25,
         },
 
     };

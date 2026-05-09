@@ -42,6 +42,39 @@ function expansion(datos) {
 }
 
 function ecualizacion(datos) {
-    // Implementación de la ecualización del histograma
+
+    const cantidadPixeles = datos.length / 4; // Cada píxel tiene 4 componentes (R, G, B, A)
+    console.log("Número total de píxeles:", datos);
+
+    // Obtener un componente cada 4 (R, G, B, A)
+    const pixelesMuestreados = [];
+    for (let i = 0; i < datos.length; i += 4) {
+        pixelesMuestreados.push(datos[i]); // Solo tomamos el componente R para la ecualización
+    }
+
+    // Contar la frecuencia de cada intensidad
+    let frecuencias = {};
+    for (let i = 0; i < pixelesMuestreados.length; i++) {
+        const valor = pixelesMuestreados[i];
+        frecuencias[valor] = (frecuencias[valor] || 0) + 1;
+    }
+
+    // Calcular la función de distribución acumulativa (CDF)
+    const cdf = [];
+    let acumulado = 0;
+    for (let i = 0; i < 256; i++) {
+        acumulado += frecuencias[i] || 0;
+        cdf[i] = acumulado / cantidadPixeles; // Normalizar por el total de píxeles
+    }
+    console.log("Función de distribución acumulativa (CDF):", cdf);
+
+    // Aplicar la fórmula de ecualización a cada píxel muestreado y actualizar el array original
+    for (let i = 0; i < pixelesMuestreados.length; i++) {
+        const valorOriginal = pixelesMuestreados[i];
+        const valorTransformado = Math.round(cdf[valorOriginal] * 255);
+        pixelesMuestreados[i] = valorTransformado;
+    }
+
+
     return datos;
 }
