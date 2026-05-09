@@ -39,6 +39,7 @@ inputFile.addEventListener('change', (event) => {
             lienzo.width = imgTemporal.naturalWidth;
             lienzo.height = imgTemporal.naturalHeight;
             ctx.clearRect(0, 0, lienzo.width, lienzo.height);
+            generarHistograma(datos, "histogramaOriginal");
         }
         imgTemporal.src = lector.result;
     }
@@ -58,28 +59,39 @@ btnProcesar.addEventListener('click', () => {
         return;
     }
 
-    lienzo.width = imgCargada.naturalWidth;
-    lienzo.height = imgCargada.naturalHeight;
+    // verificar que se haya seleccionado una opción
+    if (!rdExpansion.checked && !rdEcualizacion.checked) {
+        alert('Por favor, selecciona una opción de procesamiento (Expansión o Ecualización).');
+        return;
+    }
+
+    // obtener la opción seleccionada
+    const opcionSeleccionada = rdExpansion.checked ? 'expansion' : 'ecualizacion';
+
+    // let imagenData = ctx.getImageData(0, 0, lienzo.width, lienzo.height);
     ctx.drawImage(imgCargada, 0, 0);
-
     const imagenData = ctx.getImageData(0, 0, lienzo.width, lienzo.height);
-    const datos = imagenData.data;
-    generarHistograma(datos, true);
+    let datos = imagenData.data;
 
-    // const imagenData = ctx.getImageData(0, 0, lienzo.width, lienzo.height);
-    // const datos = imagenData.data;
+    if (opcionSeleccionada === 'expansion') {
+        datos = expansion(datos);
+    } else {
+        datos = ecualizacion(datos);
+    }
 
-    // for (let i = 0; i < datos.length/ 40; i += 4) {
-    //     console.log(`Pixel ${i / 4}: R=${datos[i]}, G=${datos[i + 1]}, B=${datos[i + 2]}, A=${datos[i + 3]}`);
-    // }
+    generarHistograma(datos, "histogramaProcesado");
 
+    ctx.putImageData(imagenData, 0, 0);
 
-    // ctx.putImageData(imagenData, 0, 0);
-    // lienzo.width = imgCargada.naturalWidth;
-    // lienzo.height = imgCargada.naturalHeight;
-    // ctx.drawImage(lienzo, 0, 0);
+    // descargar la imagen procesada
+    // const enlaceDescarga = document.createElement('a');
+    // enlaceDescarga.href = lienzo.toDataURL('image/png');
+    // enlaceDescarga.download = `imagen_procesada_${opcionSeleccionada}.png`;
+    // enlaceDescarga.click();
 });
 
+
+// Cambiar el título de la sección según la opción seleccionada
 rdExpansion.addEventListener('change', () => {
     if (rdExpansion.checked) {
         document.querySelector('.header h2').textContent = 'Procesar Expansión de Histograma';
