@@ -16,17 +16,14 @@ function expansion(datos) {
     const media = 255 / (valorMaximo - valorMinimo);
     const b = -valorMinimo * media;
 
+    console.log(`Valor mínimo: ${valorMinimo}, Valor máximo: ${valorMaximo}`);
+    console.log(`Fórmula de expansión: valor_transformado = ${media} * valor_original + ${b}`);
     // Aplicar la transformación a cada píxel muestreado y actualizar el array original
     for (let i = 0; i < pixelesMuestreados.length; i++) {
         const valorOriginal = pixelesMuestreados[i];
         const valorTransformado = Math.round(media * valorOriginal + b);
         pixelesMuestreados[i] = valorTransformado;
-    }
-    
-    for (let i = 0; i < 10; i++) {
-        const valorOriginal = pixelesMuestreados[i];
-        const valorTransformado = Math.round(media * valorOriginal + b);
-        console.log(`Pixel ${i}: valor original=${valorOriginal}, valor transformado=${valorTransformado}`);
+        // console.log(`Pixel ${i}: valor original=${valorOriginal}, valor transformado=${valorTransformado}`);
     }
 
     // Actualizar el array original con los valores transformados
