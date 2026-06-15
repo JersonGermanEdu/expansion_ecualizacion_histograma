@@ -1,10 +1,19 @@
 const inputFile = document.getElementById('inputFile');
 const imgCargada = document.getElementById('imgCargada');
 const btnProcesar = document.getElementById('btnProcesar');
+const btnEcualizar = document.getElementById('btnEcualizar');
 const rdExpansion = document.getElementById('rdExpansion');
 const rdEcualizacion = document.getElementById('rdEcualizacion');
 const lienzo = document.getElementById('lienzo');
 const ctx = lienzo.getContext('2d', { willReadFrequently: true });
+const btnReset = document.getElementById('btnReset');
+const containerReset = document.getElementById('containerReset');
+const imagePreview = document.getElementById('imagePreview');
+const canvasPreview = document.getElementById('canvasPreview');
+const placeholderHistOriginal = document.getElementById('placeholderHistOriginal');
+const placeholderHistProcesado = document.getElementById('placeholderHistProcesado');
+const histogramaOriginal = document.getElementById('histogramaOriginal');
+const histogramaProcesado = document.getElementById('histogramaProcesado');
 
 inputFile.addEventListener('change', (event) => {
     const archivo = event.target.files?.[0];
@@ -25,14 +34,14 @@ inputFile.addEventListener('change', (event) => {
             const datos = imagenData.data;
 
             for (let i = 0; i < datos.length; i += 4) {
-                if (datos[i] !==  datos[i + 1] || datos[i] !== datos[i + 2]) {
+                if (datos[i] !== datos[i + 1] || datos[i] !== datos[i + 2]) {
                     Swal.fire({
                         icon: "error",
                         title: "IMAGEN INCORRECTA...",
                         text: "La imagen debe estar en escala de grises.",
                     });
                     event.target.value = "";
-                    return; 
+                    return;
                 }
             }
             imgCargada.src = lector.result;
@@ -40,9 +49,25 @@ inputFile.addEventListener('change', (event) => {
             lienzo.height = imgTemporal.naturalHeight;
             ctx.clearRect(0, 0, lienzo.width, lienzo.height);
             // limpiamos los histogramas anteriores
-            document.getElementById('histogramaOriginal').innerHTML = '';
-            document.getElementById('histogramaProcesado').innerHTML = '';            
+            if (typeof limpiarHistogramas === 'function') {
+                limpiarHistogramas();
+            }
             generarHistograma(datos, "histogramaOriginal");
+            document.querySelector('.placeholder').style.display = 'none';
+            imgCargada.style.display = 'block';
+            containerReset.style.display = 'block';
+            if (imagePreview) {
+                imagePreview.classList.add('loaded');
+            }
+            if (canvasPreview) {
+                canvasPreview.classList.add('ready');
+            }
+            if (placeholderHistOriginal) {
+                placeholderHistOriginal.style.display = 'none';
+            }
+            if (histogramaOriginal) {
+                histogramaOriginal.style.display = 'block';
+            }
         }
         imgTemporal.src = lector.result;
     }
@@ -81,29 +106,89 @@ btnProcesar.addEventListener('click', () => {
     } else {
         datos = ecualizacion(datos);
     }
-
+    document.querySelectorAll('.placeholder')[1].style.display = 'none';
+    lienzo.style.display = 'block';
     generarHistograma(datos, "histogramaProcesado");
+    if (placeholderHistProcesado) {
+        placeholderHistProcesado.style.display = 'none';
+    }
+    if (histogramaProcesado) {
+        histogramaProcesado.style.display = 'block';
+    }
 
     ctx.putImageData(imagenData, 0, 0);
 
-    // descargar la imagen procesada
-    // const enlaceDescarga = document.createElement('a');
-    // enlaceDescarga.href = lienzo.toDataURL('image/png');
-    // enlaceDescarga.download = `imagen_procesada_${opcionSeleccionada}.png`;
-    // enlaceDescarga.click();
 });
 
+// Botón directo para aplicar ecualización sin depender del radio
+if (btnEcualizar) {
+    btnEcualizar.addEventListener('click', () => {
+        if (!imgCargada.src) {
+            alert('Primero carga una imagen en la primera sección.');
+            return;
+        }
 
-// Cambiar el título de la sección según la opción seleccionada
-rdExpansion.addEventListener('change', () => {
-    if (rdExpansion.checked) {
-        document.querySelector('.header h2').textContent = 'Procesar Expansión de Histograma';
-    }   
-});
+        // forzamos ecualización
+        ctx.drawImage(imgCargada, 0, 0);
+        const imagenData = ctx.getImageData(0, 0, lienzo.width, lienzo.height);
+        let datos = imagenData.data;
 
-rdEcualizacion.addEventListener('change', () => {
-    if (rdEcualizacion.checked) {
-        document.querySelector('.header h2').textContent = 'Procesar Ecualización de Histograma';
+        datos = ecualizacion(datos);
+
+        if (canvasPreview) {
+            canvasPreview.classList.add('ready');
+        }
+        generarHistograma(datos, "histogramaProcesado");
+        if (placeholderHistProcesado) {
+            placeholderHistProcesado.style.display = 'none';
+        }
+        if (histogramaProcesado) {
+            histogramaProcesado.style.display = 'block';
+            histogramaProcesado.parentElement?.classList.add('ready');
+        }
+
+        ctx.putImageData(imagenData, 0, 0);
+    });
+}
+
+// Botón de reestablecer / limpiar todo
+btnReset.addEventListener('click', () => {
+    containerReset.style.display = 'none';
+    if (typeof limpiarHistogramas === 'function') {
+        limpiarHistogramas();
     }
+    lienzo.style.display = 'none';
+    imgCargada.style.display = 'none';
+    document.querySelectorAll('.placeholder').forEach(placeholder => {
+        placeholder.style.display = 'block';
+    });
+    if (inputFile) inputFile.value = '';
+    if (imgCargada) imgCargada.src = '';
+    if (lienzo && ctx) ctx.clearRect(0, 0, lienzo.width, lienzo.height);
+    if (btnProcesar) btnProcesar.disabled = true;
+    if (rdExpansion) {
+        rdExpansion.checked = true;
+        const hdr = document.querySelector('.header h2');
+        if (hdr) hdr.textContent = 'Procesar Expansión de Histograma';
+    }
+    if (imagePreview) {
+        imagePreview.classList.remove('loaded');
+    }
+    if (canvasPreview) {
+        canvasPreview.classList.remove('ready');
+    }
+    if (placeholderHistOriginal) {
+        placeholderHistOriginal.style.display = 'flex';
+    }
+    if (placeholderHistProcesado) {
+        placeholderHistProcesado.style.display = 'flex';
+    }
+    if (histogramaOriginal) {
+        histogramaOriginal.style.display = 'none';
+    }
+    if (histogramaProcesado) {
+        histogramaProcesado.style.display = 'none';
+    }
+
 });
 

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expansión y Ecualización de Histogramas</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.24/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <header class="hero">
+        <div class="container">
+            <h1 class="hero-title">Expansión y Ecualización de Histogramas</h1>
+            <p class="hero-subtitle">Carga una imagen en escala de grises y aplica expansión o ecualización de histograma para mejorar su contraste.</p>
+        </div>
+        <div class="top-actions">
+            <a href="index.html" class="button volver">VOLVER</a>
+        </div>
+    </header>
+
+    <main class="container row mx-auto py-4">
+        <section class="section col-sm-6">
+            <h2 style="margin-bottom: 20px;">Imagen original</h2>
+            <div class="card border-0">
+                <label class="button" for="inputFile">Cargar imagen</label>
+                <input type="file" id="inputFile" accept="image/jpeg,image/jpg">
+                <div class="image-preview" id="imagePreview">
+                    <div class="placeholder">Aún no has cargado una imagen</div>
+                    <img id="imgCargada" alt="Vista previa de la imagen" />
+                </div>
+            </div>
+        </section>
+        <section class="section col-sm-6">
+            <div class="header">
+                <h2>Procesar Expansión de Histograma</h2>
+                <div class="group-options">
+                    <label><input type="radio" name="opciones" id="rdExpansion" checked>Expansión</label>
+                    <label><input type="radio" name="opciones" id="rdEcualizacion"> Ecualización</label>
+                </div>
+            </div>
+            <div class="card border-0">
+                <button class="button" id="btnProcesar" disabled>Procesar imagen</button>
+                <div class="canvas-preview" id="canvasPreview">
+                    <div class="placeholder">La imagen procesada aparecerá aquí</div>
+                    <canvas id="lienzo" style="display: none;"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+    <section id="containerReset" style="display: none;" class="row mx-auto text-center pb-4">
+        <div>
+            <button id="btnReset" class="button button-red">Reestablecer</button>
+        </div>
+    </section>
+    <section class="container row mx-auto pb-4">
+        <section class="section col-sm-6">
+            <h3 class="histogram-title">Histograma Original</h3>
+            <div class="chart-container">
+                <div class="chart-placeholder" id="placeholderHistOriginal">Histograma original pendiente</div>
+                <canvas id="histogramaOriginal"></canvas>
+            </div>
+        </section>
+        <section class="section col-sm-6">
+            <h3 class="histogram-title">Histograma Procesado</h3>
+            <div class="chart-container">
+                <div class="chart-placeholder" id="placeholderHistProcesado">Histograma procesado pendiente</div>
+                <canvas id="histogramaProcesado"></canvas>
+            </div>
+        </section>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.24/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+
+    <script src="scripts/histograma.js"></script>
+    <script src="scripts/expansion_ecualizacion.js"></script>
+    <script src="scripts/index.js"></script>
+</body>
+
+</html>
