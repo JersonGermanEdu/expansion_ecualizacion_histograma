@@ -70,6 +70,8 @@ h1 {
     justify-content: center;
     text-align: center;
     border: 2px dashed #d1d5db;
+    background-color: rgba(243, 244, 246, 0.8) !important;
+    color: #6b7280;
     border-radius: 12px;
     min-height: 260px;
     padding: 16px;
