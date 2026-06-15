@@ -13,7 +13,9 @@ function expansion(datos) {
     
 
     // Aplicar la fórmula de expansión del histograma a cada pixel Muestreado
-    const media = 255 / (valorMaximo - valorMinimo);
+    // Evitar divisiones por cero cuando todos los píxeles tienen el mismo valor
+    const rango = Math.max(1, valorMaximo - valorMinimo);
+    const media = 255 / rango;
     const b = -valorMinimo * media;
 
     console.log(`Valor mínimo: ${valorMinimo}, Valor máximo: ${valorMaximo}`);
@@ -26,12 +28,14 @@ function expansion(datos) {
         // console.log(`Pixel ${i}: valor original=${valorOriginal}, valor transformado=${valorTransformado}`);
     }
 
-    // Actualizar el array original con los valores transformados
+    // Actualizar el array original con los valores transformados (mantener alpha)
     for (let i = 0; i < pixelesMuestreados.length; i++) {
         const indiceOriginal = i * 4;
-        datos[indiceOriginal] = pixelesMuestreados[i];  // Componente R
-        datos[indiceOriginal + 1] = pixelesMuestreados[i]; // Componente G
-        datos[indiceOriginal + 2] = pixelesMuestreados[i];  // Componente B
+        const v = Math.round(pixelesMuestreados[i]);
+        const vClamped = Math.max(0, Math.min(255, v));
+        datos[indiceOriginal] = vClamped;  // Componente R
+        datos[indiceOriginal + 1] = vClamped; // Componente G
+        datos[indiceOriginal + 2] = vClamped;  // Componente B
         // El componente A (transparencia) se mantiene sin cambios
     }
 
@@ -49,29 +53,52 @@ function ecualizacion(datos) {
         pixelesMuestreados.push(datos[i]); // Solo tomamos el componente R para la ecualización
     }
 
-    // Contar la frecuencia de cada intensidad
-    let frecuencias = {};
+    // Contar la frecuencia de cada intensidad (0..255)
+    const frecuencias = new Array(256).fill(0);
     for (let i = 0; i < pixelesMuestreados.length; i++) {
-        const valor = pixelesMuestreados[i];
-        frecuencias[valor] = (frecuencias[valor] || 0) + 1;
+        frecuencias[pixelesMuestreados[i]]++;
     }
 
     // Calcular la función de distribución acumulativa (CDF)
-    const cdf = [];
+    const cdf = new Array(256).fill(0);
     let acumulado = 0;
     for (let i = 0; i < 256; i++) {
-        acumulado += frecuencias[i] || 0;
+        acumulado += frecuencias[i];
         cdf[i] = acumulado / cantidadPixeles; // Normalizar por el total de píxeles
     }
-    console.log("Función de distribución acumulativa (CDF):", cdf);
 
-    // Aplicar la fórmula de ecualización a cada píxel muestreado y actualizar el array original
-    for (let i = 0; i < pixelesMuestreados.length; i++) {
-        const valorOriginal = pixelesMuestreados[i];
-        const valorTransformado = Math.round(cdf[valorOriginal] * 255);
-        pixelesMuestreados[i] = valorTransformado;
+    // Encontrar el primer cdf > 0 (cdfMin) para evitar estirar desde 0
+    let cdfMin = 0;
+    for (let i = 0; i < 256; i++) {
+        if (frecuencias[i] > 0) {
+            cdfMin = cdf[i];
+            break;
+        }
     }
 
+    // Precomputar la tabla de mapeo para eficiencia
+    const mapa = new Array(256);
+    const denom = 1 - cdfMin;
+    for (let i = 0; i < 256; i++) {
+        if (denom <= 0) {
+            mapa[i] = 0;
+        } else {
+            mapa[i] = Math.round(((cdf[i] - cdfMin) / denom) * 255);
+        }
+        if (isNaN(mapa[i])) mapa[i] = 0;
+        mapa[i] = Math.max(0, Math.min(255, mapa[i]));
+    }
+
+    // Aplicar la tabla de mapeo a los datos originales (mantener alpha)
+    for (let i = 0; i < pixelesMuestreados.length; i++) {
+        const indiceOriginal = i * 4;
+        const orig = pixelesMuestreados[i];
+        const n = mapa[orig];
+        datos[indiceOriginal] = n;
+        datos[indiceOriginal + 1] = n;
+        datos[indiceOriginal + 2] = n;
+        // alpha se deja como estaba
+    }
 
     return datos;
 }
